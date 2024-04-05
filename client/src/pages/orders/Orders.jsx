@@ -1,10 +1,11 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Orders.scss";
 import {useQuery} from "@tanstack/react-query"
 import newRequest from "../../utils/newRequest"
 
 const Orders = () => {
+  const navigate = useNavigate()
   const currentUser = JSON.parse(localStorage.getItem("currentUser"))
 
   const { isLoading, error, data } = useQuery({
@@ -14,6 +15,24 @@ const Orders = () => {
         return res.data
       })
   })
+
+  const handleContact = async(order) => {
+    const sellerId = order.sellerId
+    const buyerId = order.buyerId
+    const id = sellerId + buyerId
+try {
+  const res = await newRequest.get(`conversations/single/${id}`)
+  navigate(`/message/${res.data.id}`)
+
+
+} catch (err) {
+  if(err.response.status === 404 ){
+    const res = await newRequest.post(`conversations`,{to:currentUser.seller ? buyerId :sellerId})
+    navigate(`/message/${res.data.id}`)
+  }
+
+}
+  }
 
   return (
     <div className="orders">
@@ -43,7 +62,7 @@ const Orders = () => {
             <td>{order.price}</td>
             
             <td>
-              <img className="message" src="./img/message.png" alt="" />
+              <img className="message" src="./img/message.png" onClick={() => handleContact(order)} alt="" />
             </td>
           </tr>))}
           
