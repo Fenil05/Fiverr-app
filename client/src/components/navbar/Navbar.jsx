@@ -80,7 +80,9 @@ function Navbar() {
             </div>
           ) : (
             <>
+            <Link to="/login">
               <span>Sign in</span>
+              </Link>
               <Link className="link" to="/register">
                 <button>Join</button>
               </Link>
